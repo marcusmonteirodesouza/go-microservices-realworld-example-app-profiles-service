@@ -7,9 +7,8 @@ require (
 	github.com/bxcodec/faker/v3 v3.8.0
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/go-playground/validator/v10 v10.11.0
-	github.com/golang-jwt/jwt/v4 v4.4.1
-	github.com/google/go-cmp v0.5.8
 	github.com/joho/godotenv v1.4.0
+	github.com/marcusmonteirodesouza/go-microservices-realworld-example-app-client v0.0.0-20220707140016-a9a8f6aa8aa0
 	github.com/rs/zerolog v1.27.0
 	google.golang.org/api v0.59.0
 )
@@ -20,9 +19,9 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/googleapis/gax-go/v2 v2.1.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/marcusmonteirodesouza/go-microservices-realworld-example-app-client v0.0.0-20220707140016-a9a8f6aa8aa0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	go.opencensus.io v0.23.0 // indirect

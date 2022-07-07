@@ -1,4 +1,4 @@
-# ![RealWorld Example App](logo.png) - Profiles Service
+# ![RealWorld Example App](logo.png)
 
 > ### [Go](https://go.dev/) codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
@@ -12,10 +12,11 @@ We've gone to great lengths to adhere to the **[Go](https://go.dev/)** community
 
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
+# Profiles Service
 
 # How it works
 
-> Describe the general architecture of your app here
+This service implements the `profiles` related services from the [API Spec](https://realworld-docs.netlify.app/docs/specs/backend-specs/endpoints).
 
 # Getting started
 

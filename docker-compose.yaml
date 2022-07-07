@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - FIRESTORE_PROJECT_ID=${FIRESTORE_PROJECT_ID}
+      - FIRESTORE_PORT=$FIRESTORE_PORT
+      - FIRESTORE_EMULATOR_HOST=${FIRESTORE_EMULATOR_HOST}
+      - PORT=${PORT}
+      - USERS_SERVICE_BASE_URL=${USERS_SERVICE_BASE_URL}
+    depends_on:
+      - users_service
+  firestore_emulator:
+    image: mtlynch/firestore-emulator
+    ports:
+      - "${FIRESTORE_PORT}:${FIRESTORE_PORT}"
+    environment:
+      - FIRESTORE_PROJECT_ID=${FIRESTORE_PROJECT_ID}
+      - PORT=${FIRESTORE_PORT}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${FIRESTORE_PORT}"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+  users_service: 
+    image: ${USERS_SERVICE_IMAGE_URL}
+    ports:
+      - "${USERS_SERVICE_PORT}:${USERS_SERVICE_PORT}"
+    environment:
+      - FIRESTORE_PROJECT_ID=${FIRESTORE_PROJECT_ID}
+      - FIRESTORE_PORT=$FIRESTORE_PORT
+      - FIRESTORE_EMULATOR_HOST=${FIRESTORE_EMULATOR_HOST}
+      - PORT=${USERS_SERVICE_PORT}
+      - JWT_SECRET_KEY=${USERS_SERVICE_JWT_SECRET_KEY}
+      - JWT_SECONDS_TO_EXPIRE=${USERS_SERVICE_JWT_SECONDS_TO_EXPIRE}
+    depends_on:
+      firestore_emulator: 
+        condition: 
+          service_healthy

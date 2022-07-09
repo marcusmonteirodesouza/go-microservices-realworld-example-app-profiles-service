@@ -64,10 +64,10 @@ func newErrorResponse(errors []error) errorResponse {
 }
 
 func (h *ProfilesHandlers) FollowUser(w http.ResponseWriter, r *http.Request) {
-	follower := r.Context().Value(auth.UsernameContextKey).(string)
 	followee := chi.URLParam(r, "username")
+	follower := r.Context().Value(auth.UsernameContextKey).(string)
 
-	profile, err := h.ProfilesService.Follow(r.Context(), follower, followee)
+	profile, err := h.ProfilesService.Follow(r.Context(), followee, follower)
 	if err != nil {
 		if _, ok := err.(*custom_errors.NotFoundError); ok {
 			notFound(w, r, []error{err})
@@ -97,10 +97,43 @@ func (h *ProfilesHandlers) FollowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProfilesHandlers) GetProfile(w http.ResponseWriter, r *http.Request) {
-	follower := r.Context().Value(auth.UsernameContextKey).(string)
 	followee := chi.URLParam(r, "username")
+	follower := r.Context().Value(auth.UsernameContextKey).(string)
 
 	profile, err := h.ProfilesService.GetProfileByUsername(r.Context(), followee, &follower)
+	if err != nil {
+		if _, ok := err.(*custom_errors.NotFoundError); ok {
+			notFound(w, r, []error{err})
+			return
+		}
+
+		if _, ok := err.(*custom_errors.AlreadyExistsError); ok {
+			unprocessableEntity(w, r, []error{err})
+			return
+		}
+
+		internalServerError(w, r, err)
+		return
+	}
+
+	responseBody := newProfileResponse(profile.Username, profile.Bio, profile.Image, *profile.Following)
+
+	response, err := json.Marshal(responseBody)
+	if err != nil {
+		internalServerError(w, r, err)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(response)
+}
+
+func (h *ProfilesHandlers) UnfollowUser(w http.ResponseWriter, r *http.Request) {
+	followee := chi.URLParam(r, "username")
+	follower := r.Context().Value(auth.UsernameContextKey).(string)
+
+	profile, err := h.ProfilesService.Unfollow(r.Context(), followee, follower)
 	if err != nil {
 		if _, ok := err.(*custom_errors.NotFoundError); ok {
 			notFound(w, r, []error{err})

@@ -24,33 +24,33 @@ func NewProfilesService(usersClient users.UsersClient, firestore firestore.Clien
 const followsCollectionName = "follows"
 
 type followDocData struct {
-	Follower string `firestore:"follower"`
 	Followee string `firestore:"followee"`
+	Follower string `firestore:"follower"`
 }
 
-func newFollowDocData(follower string, followee string) followDocData {
+func newFollowDocData(followee string, follower string) followDocData {
 	return followDocData{
-		Follower: follower,
 		Followee: followee,
+		Follower: follower,
 	}
 }
 
-func (s *ProfilesService) Follow(ctx context.Context, followerUsername string, followeeUsername string) (*Profile, error) {
-	follower, err := s.UsersClient.GetUserByUsername(followerUsername)
-	if err != nil {
-		log.Error().Err(err).Msgf("Error getting follower %s", followerUsername)
-		return nil, err
-	}
-
+func (s *ProfilesService) Follow(ctx context.Context, followeeUsername string, followerUsername string) (*Profile, error) {
 	followee, err := s.UsersClient.GetUserByUsername(followeeUsername)
 	if err != nil {
 		log.Error().Err(err).Msgf("Error getting followee %s", followeeUsername)
 		return nil, err
 	}
 
+	follower, err := s.UsersClient.GetUserByUsername(followerUsername)
+	if err != nil {
+		log.Error().Err(err).Msgf("Error getting follower %s", followerUsername)
+		return nil, err
+	}
+
 	followDocRef := s.Firestore.Collection(followsCollectionName).NewDoc()
 
-	followdata := newFollowDocData(follower.User.Username, followee.User.Username)
+	followdata := newFollowDocData(followee.User.Username, follower.User.Username)
 
 	_, err = followDocRef.Create(ctx, followdata)
 	if err != nil {
@@ -65,9 +65,38 @@ func (s *ProfilesService) Follow(ctx context.Context, followerUsername string, f
 	return profile, nil
 }
 
-func (s *ProfilesService) IsFollowing(ctx context.Context, followerUsername string, followeeUsername string) (bool, error) {
+func (s *ProfilesService) Unfollow(ctx context.Context, followeeUsername string, followerUsername string) (*Profile, error) {
+	isFollowing, err := s.IsFollowing(ctx, followeeUsername, followerUsername)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isFollowing {
+		return s.GetProfileByUsername(ctx, followeeUsername, &followerUsername)
+	}
+
 	followsCollection := s.Firestore.Collection(followsCollectionName)
-	query := followsCollection.Where("follower", "==", followerUsername).Where("followee", "==", followeeUsername).Limit(1)
+	query := followsCollection.Where("followee", "==", followeeUsername).Where("follower", "==", followerUsername).Limit(1)
+	followsDocs := query.Documents(ctx)
+	defer followsDocs.Stop()
+	for {
+		followDoc, err := followsDocs.Next()
+		if err == iterator.Done {
+			return nil, err
+		}
+
+		_, err = followDoc.Ref.Delete(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		return s.GetProfileByUsername(ctx, followeeUsername, &followerUsername)
+	}
+}
+
+func (s *ProfilesService) IsFollowing(ctx context.Context, followeeUsername string, followerUsername string) (bool, error) {
+	followsCollection := s.Firestore.Collection(followsCollectionName)
+	query := followsCollection.Where("followee", "==", followeeUsername).Where("follower", "==", followerUsername).Limit(1)
 	followsDocs := query.Documents(ctx)
 	defer followsDocs.Stop()
 	for {
@@ -91,7 +120,7 @@ func (s *ProfilesService) GetProfileByUsername(ctx context.Context, username str
 	profile := NewProfile(user.User.Username, user.User.Bio, user.User.Image, nil)
 
 	if follower != nil {
-		isFollowing, err := s.IsFollowing(ctx, *follower, profile.Username)
+		isFollowing, err := s.IsFollowing(ctx, profile.Username, *follower)
 		if err != nil {
 			return nil, err
 		}

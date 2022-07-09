@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 type Profile struct {
@@ -24,6 +25,8 @@ type ErrorResponse struct {
 type ErrorResponseErrors struct {
 	Body []string `json:"body"`
 }
+
+var baseURL = os.Getenv("")
 
 func FollowUser(username string, token string) (*http.Response, error) {
 	url := fmt.Sprintf("http://localhost:8080/profiles/%s/follow", username)

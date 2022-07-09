@@ -52,6 +52,7 @@ func main() {
 	router := chi.NewRouter()
 	router.Post("/profiles/{username}/follow", authMiddleware.Authenticate(profilesHandlers.FollowUser))
 	router.Get("/profiles/{username}", authMiddleware.AuthenticateOptional(profilesHandlers.GetProfile))
+	router.Delete("/profiles/{username}/follow", authMiddleware.Authenticate(profilesHandlers.UnfollowUser))
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),

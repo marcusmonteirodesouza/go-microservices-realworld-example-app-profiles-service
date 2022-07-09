@@ -1,4 +1,5 @@
 #!/bin/bash
 
-docker compose up -d --build
-USERS_SERVICE_BASE_URL=http://localhost:8081 go test -v ./... && docker compose down
+./start.sh "$1"
+go clean -testcache
+BASE_URL=http://localhost:8080 USERS_SERVICE_BASE_URL=http://localhost:8081 go test -v ./... && USERS_SERVICE_IMAGE_URL="$1" docker compose down

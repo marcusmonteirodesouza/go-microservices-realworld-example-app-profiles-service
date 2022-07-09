@@ -24,9 +24,9 @@ This service implements the `profiles` related services from the [API Spec](http
 
 1. Install [Docker](https://docs.docker.com/get-docker/).
 1. Update the [`.env`](./.env) file with your own values.
-1. Run `docker compose up`.
+1. Run `./test.sh <USERS_SERVICE_IMAGE_URL>`.
 
 ## Testing
 
 1. Update the [`.env`](./.env) file with your own values or set your environment variables accordingly.
-1. Run `./test.sh`.
+1. Run `./test.sh <USERS_SERVICE_IMAGE_URL>`.

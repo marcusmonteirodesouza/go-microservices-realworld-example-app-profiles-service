@@ -1,3 +1,3 @@
 #!/bin/bash
 
-USERS_SERVICE_IMAGE_URL="$1" docker compose up -d --build
+API_BASE_URL="$1" docker compose up -d --build

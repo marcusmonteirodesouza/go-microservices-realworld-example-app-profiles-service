@@ -29,9 +29,9 @@ func main() {
 
 	ctx := context.Background()
 
-	usersServiceBaseUrl := os.Getenv("USERS_SERVICE_BASE_URL")
+	usersServiceBaseUrl := os.Getenv("API_BASE_URL")
 	if len(usersServiceBaseUrl) == 0 {
-		log.Fatal().Err(err).Msg("Environment variable 'USERS_SERVICE_BASE_URL' must be set and not be empty")
+		log.Fatal().Err(err).Msg("Environment variable 'API_BASE_URL' must be set and not be empty")
 	}
 
 	firestoreClient, err := firestore.InitFirestore(ctx, firestoreProjectId)

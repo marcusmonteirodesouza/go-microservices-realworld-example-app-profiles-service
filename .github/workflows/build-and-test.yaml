@@ -24,4 +24,4 @@ jobs:
         run: gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
       - uses: actions/setup-go@v3
       - name: Test
-        run: ./test.sh ${{ secrets.GCP_DEV_API_BASE_URL }}
+        run: ./test.sh ${{ secrets.GCP_DEV_USERS_SERVICE_IMAGE }}

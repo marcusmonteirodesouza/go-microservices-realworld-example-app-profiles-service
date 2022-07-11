@@ -3,29 +3,16 @@ services:
   app:
     build: .
     ports:
-      - "8080:8080"
+      - "${PORT}:${PORT}"
     environment:
       - FIRESTORE_PROJECT_ID=${FIRESTORE_PROJECT_ID}
-      - FIRESTORE_PORT=$FIRESTORE_PORT
+      - FIRESTORE_PORT=${FIRESTORE_PORT}
       - FIRESTORE_EMULATOR_HOST=${FIRESTORE_EMULATOR_HOST}
-      - PORT=8080
-      - USERS_SERVICE_BASE_URL=http://users_service:8081
+      - PORT=${PORT}
+      - API_BASE_URL=${API_BASE_URL}
     depends_on:
-      - users_service
-  users_service: 
-    image: ${USERS_SERVICE_IMAGE_URL}
-    ports:
-      - "8081:8081"
-    environment:
-      - FIRESTORE_PROJECT_ID=${FIRESTORE_PROJECT_ID}
-      - FIRESTORE_PORT=$FIRESTORE_PORT
-      - FIRESTORE_EMULATOR_HOST=${FIRESTORE_EMULATOR_HOST}
-      - PORT=8081
-      - JWT_SECRET_KEY=${USERS_SERVICE_JWT_SECRET_KEY}
-      - JWT_SECONDS_TO_EXPIRE=${USERS_SERVICE_JWT_SECONDS_TO_EXPIRE}
-    depends_on:
-      firestore_emulator: 
-        condition: 
+      firestore_emulator:
+        condition:
           service_healthy
   firestore_emulator:
     image: mtlynch/firestore-emulator

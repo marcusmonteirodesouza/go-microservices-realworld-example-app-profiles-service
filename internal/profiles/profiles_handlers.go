@@ -98,7 +98,11 @@ func (h *ProfilesHandlers) FollowUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProfilesHandlers) GetProfile(w http.ResponseWriter, r *http.Request) {
 	followee := chi.URLParam(r, "username")
-	follower := r.Context().Value(auth.UsernameContextKey).(string)
+	var follower string
+	followerValue := r.Context().Value(auth.UsernameContextKey)
+	if followerValue != nil {
+		follower = followerValue.(string)
+	}
 
 	profile, err := h.ProfilesService.GetProfileByUsername(r.Context(), followee, &follower)
 	if err != nil {

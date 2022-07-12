@@ -128,6 +128,50 @@ func TestGivenUserIsNotFollowedWhenGetProfileShouldReturnProfileWithFollowingFal
 	}
 }
 
+func TestGivenCallerIsNotAuthenticatedWhenGetProfileShouldReturnProfileWithFollowingFalse(t *testing.T) {
+	profileClient := utils.NewApiClient()
+
+	profileUsername := fmt.Sprintf("%s%s", utils.TestPrefix, faker.Username())
+	profileEmail := fmt.Sprintf("%s%s", utils.TestPrefix, faker.Email())
+	profilePassword := faker.Password()
+	profileBio := faker.Paragraph()
+	profileImage := faker.URL()
+
+	profileUser, err := profileClient.Users.RegisterUser(profileUsername, profileEmail, profilePassword)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	profileUser, err = profileClient.Users.UpdateUser(client.UpdateUserRequest{
+		Bio:   &profileBio,
+		Image: &profileImage,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	profile, err := GetProfileAndDecode(profileUser.User.Username, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if profile.Profile.Username != profileUser.User.Username {
+		t.Fatalf("got %s, want %s", profile.Profile.Username, profileUser.User.Username)
+	}
+
+	if profile.Profile.Bio != profileUser.User.Bio {
+		t.Fatalf("got %s, want %s", profile.Profile.Bio, profileUser.User.Bio)
+	}
+
+	if profile.Profile.Image != profileUser.User.Image {
+		t.Fatalf("got %s, want %s", profile.Profile.Image, profileUser.User.Image)
+	}
+
+	if profile.Profile.Following {
+		t.Fatalf("got %t, want %t", profile.Profile.Following, false)
+	}
+}
+
 func TestGivenInvalidTokenWhenGetProfileShouldReturnProfileWithFollowingFalse(t *testing.T) {
 	profileClient := utils.NewApiClient()
 

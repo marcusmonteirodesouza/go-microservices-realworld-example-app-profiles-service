@@ -55,7 +55,7 @@ func (c *UsersClient) GetCurrentUser(tokenString string) (*GetCurrentUserRespons
 		return nil, err
 	}
 
-	req.Header.Set("X-Forwarded-Authorization", fmt.Sprintf("Bearer %s", tokenString))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenString))
 
 	response, err := client.Do(req)
 	if err != nil {

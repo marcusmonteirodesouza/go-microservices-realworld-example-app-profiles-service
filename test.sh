@@ -1,5 +1,5 @@
 #!/bin/bash
 
-./start.sh "$1"
+./start.sh
 go clean -testcache
-BASE_URL=http://localhost:8080 USERS_SERVICE_BASE_URL=http://localhost:8081 go test -v ./... && USERS_SERVICE_IMAGE="$1" docker compose down
+BASE_URL=http://localhost:8080 USERS_SERVICE_BASE_URL="$1" go test -v ./... && docker compose down

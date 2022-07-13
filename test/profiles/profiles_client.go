@@ -38,7 +38,7 @@ func FollowUser(username string, token string) (*http.Response, error) {
 		return nil, err
 	}
 
-	req.Header.Set("authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("X-Forwarded-Authorization", fmt.Sprintf("Bearer %s", token))
 
 	response, err := httpClient.Do(req)
 	if err != nil {
@@ -79,7 +79,7 @@ func UnfollowUser(username string, token string) (*http.Response, error) {
 		return nil, err
 	}
 
-	req.Header.Set("authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("X-Forwarded-Authorization", fmt.Sprintf("Bearer %s", token))
 
 	response, err := httpClient.Do(req)
 	if err != nil {
@@ -121,7 +121,7 @@ func GetProfile(username string, token *string) (*http.Response, error) {
 	}
 
 	if token != nil {
-		req.Header.Set("authorization", fmt.Sprintf("Bearer %s", *token))
+		req.Header.Set("X-Forwarded-Authorization", fmt.Sprintf("Bearer %s", *token))
 	}
 
 	response, err := httpClient.Do(req)
